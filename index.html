@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Mi Persona Favorita ❤️</title>
+    <style>
+        :root {
+            --bg-color: #ffe6ea;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-border: #ff85a1;
+            --text-primary: #d90429;
+            --text-secondary: #4a4a4a;
+            --btn-bg: linear-gradient(135deg, #ff758f, #ff4d6d);
+            --btn-text: #ffffff;
+            --msg-bg: rgba(255, 182, 193, 0.25);
+            --msg-border: #ff4d6d;
+            --msg-text: #590d22;
+            --coupon-border: #ff758f;
+            --coupon-text: #c9184a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 20%, #fff0f3 0%, #ffe6ea 80%);
+            color: var(--text-secondary);
+            margin: 0;
+            padding: 20px;
+            padding-bottom: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Pantalla de la Carta Inicial */
+        #envelopeScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #ff758f, #c9184a);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .envelope-box {
+            background: #ffffff;
+            padding: 40px 30px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            max-width: 320px;
+            width: 90%;
+            border: 3px solid #ff85a1;
+            animation: bounceIn 0.8s ease;
+        }
+
+        .envelope-box h2 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            font-size: 22px;
+        }
+
+        .envelope-box p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .open-envelope-btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .open-envelope-btn:hover {
+            transform: scale(1.08);
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Contenido Principal oculto al inicio */
+        #mainContent {
+            display: none;
+            opacity: 0;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            transition: opacity 0.8s ease;
+        }
+
+        .show-content {
+            display: flex !important;
+            opacity: 1 !important;
+        }
+
+        /* Contenedor de la nieve */
+        .snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -20px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            user-select: none;
+            z-index: 1;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-20px) translateX(0) rotate(0deg); opacity: 0.8; }
+            50% { transform: translateY(50vh) translateX(20px) rotate(180deg); opacity: 1; }
+            100% { transform: translateY(105vh) translateX(-20px) rotate(360deg); opacity: 0.2; }
+        }
+
+        .card, .music-control {
+            z-index: 10;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 22px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 8px 25px rgba(255, 117, 143, 0.25);
+            margin-bottom: 20px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        h1 { 
+            color: var(--text-primary); 
+            font-size: 24px; 
+            margin-bottom: 8px; 
+            text-shadow: 0 0 10px rgba(255, 117, 143, 0.3);
+        }
+        h3 { 
+            color: var(--text-primary); 
+            font-size: 18px; 
+            margin-top: 5px; 
+        }
+        p { 
+            font-size: 14px; 
+            line-height: 1.5; 
+            color: var(--text-secondary); 
+            opacity: 0.9;
+        }
+        
+        /* Imagen de Portada para secciones ocultas */
+        .gallery-cover {
+            cursor: pointer;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 2px dashed var(--card-border);
+            background: #fff0f3;
+            padding: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .gallery-cover:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(255, 117, 143, 0.3);
+        }
+        .gallery-cover img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 10px;
+            display: block;
+        }
+        .gallery-cover p {
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        /* Secciones ocultas inicialmente */
+        .hidden-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .photo-gallery {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 10px 0;
+            margin-top: 10px;
+            scroll-snap-type: x mandatory;
+        }
+        .photo-card {
+            flex: 0 0 88%;
+            scroll-snap-align: center;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            background: #ffffff;
+            text-align: left;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .photo-card img, .photo-card video {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            display: block;
+        }
+        .photo-caption {
+            font-size: 13px;
+            color: #590d22;
+            padding: 12px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* Botones desplegables */
+        .gift-btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            font-weight: bold;
+            border: none;
+            padding: 14px 18px;
+            margin: 10px 0 2px 0;
+            width: 100%;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+        }
+        .gift-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 77, 109, 0.5);
+        }
+        .secret-message {
+            display: none;
+            background: var(--msg-bg);
+            border-left: 4px solid var(--msg-border);
+            padding: 14px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--msg-text);
+            text-align: left;
+            line-height: 1.6;
+        }
+        .secret-message img, .secret-message video {
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 10px;
+            object-fit: cover;
+            max-height: 250px;
+        }
+
+        /* Contenedor de la Carta Sorpresa */
+        .letter-container {
+            background: #fff0f3;
+            border: 2px dashed var(--coupon-border);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .choice-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            position: relative;
+            min-height: 50px;
+        }
+
+        .btn-yes {
+            background: #2b9348;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(43, 147, 72, 0.3);
+            transition: transform 0.2s;
+        }
+        .btn-yes:hover { transform: scale(1.05); }
+
+        .btn-no {
+            background: #d90429;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            position: absolute;
+            transition: all 0.15s ease-out;
+            box-shadow: 0 4px 10px rgba(217, 4, 41, 0.3);
+        }
+
+        /* Cupones ocultos inicialmente */
+        .coupon-grid {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 15px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .coupon {
+            border: 2px dashed var(--coupon-border);
+            padding: 14px 10px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+            text-align: center;
+            
+            /* Efecto oculto / borroso por defecto */
+            color: transparent;
+            text-shadow: 0 0 8px rgba(201, 24, 74, 0.5);
+            background: rgba(255, 240, 243, 0.6);
+            backdrop-filter: blur(4px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .coupon:hover {
+            color: var(--coupon-text);
+            text-shadow: none;
+            background: #ffffff;
+            backdrop-filter: none;
+            transform: scale(1.03);
+            box-shadow: 0 4px 12px rgba(255, 117, 143, 0.3);
+        }
+
+        /* Botón Flotante de Música */
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff4d6d, #c9184a);
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            border-radius: 50px;
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(201, 24, 74, 0.4);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .music-control:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(201, 24, 74, 0.6);
+        }
+
+        /* Corazones al mover el cursor */
+        .heart-particle {
+            position: fixed;
+            pointer-events: none;
+            font-size: 16px;
+            animation: floatUp 1.2s ease-out forwards;
+            z-index: 9999;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.8) rotate(0deg); }
+            100% { opacity: 0; transform: translate(-50%, -100px) scale(1.4) rotate(20deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Pantalla Inicial: Carta de Presentación -->
+    <div id="envelopeScreen">
+        <div class="envelope-box">
+            <h2>💌 Tienes una Carta</h2>
+            <p>Un detalle especial creado con todo mi amor para ti.</p>
+            <button class="open-envelope-btn" onclick="openMainPage()">Abrir Carta ❤️</button>
+        </div>
+    </div>
+
+    <!-- Contenido Principal de la Página (Oculto al inicio) -->
+    <div id="mainContent">
+
+        <!-- Contenedor para el efecto de nieve -->
+        <div class="snow-container" id="snowContainer"></div>
+
+        <!-- Audio de Fondo -->
+        <audio id="bgMusic" loop preload="auto">
+            <source src="cancion.mp3" type="audio/mpeg">
+        </audio>
+
+        <!-- Botón Flotante de Música -->
+        <button class="music-control" id="musicBtn" onclick="toggleMusic()">
+            <span id="musicIcon">🎵</span> <span id="musicText">Música</span>
+        </button>
+
+        <!-- Encabezado -->
+        <div class="card">
+            <h1>✨ Nuestro Rincón Especial ✨</h1>
+            <p>Un detalle interactivo diseñado especialmente para ti ❤️</p>
+        </div>
+
+        <!-- 1. Galería de Recuerdos Oculta detrás de una imagen -->
+        <div class="card">
+            <h3>📸 Nuestros Momentos</h3>
+            
+            <div class="gallery-cover" id="galleryCover" onclick="revealGallery()">
+                <img src="portada.jpg" alt="Portada de Nuestros Momentos" onerror="this.src='https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=500&auto=format&fit=crop'">
+                <p>🎁 Toca aquí para abrir nuestros recuerdos ✨</p>
+            </div>
+
+            <div class="hidden-section" id="photoGalleryContainer">
+                <p style="font-size: 12px; margin-bottom: 5px;">Desliza para ver más recuerdos ➡️</p>
+                <div class="photo-gallery">
+                    <div class="photo-card">
+                        <img src="foto1.jpg" alt="Foto Juntos">
+                        <div class="photo-caption">Tú y yo siempre sonriendo ✨</div>
+                    </div>
+                    <div class="photo-card">
+                        <img src="foto2.jpg" alt="Ilustración 3D">
+                        <div class="photo-caption">Nuestro abrazo favorito 🤗</div>
+                    </div>
+                    <div class="photo-card">
+                        <video src="video_moto.mp4" controls muted loop playsinline></video>
+                        <div class="photo-caption">❤️ A tu lado donde sea ❤️</div>
+                    </div>
+                    <div class="photo-card">
+                        <img src="perritos.jpg" alt="Nuestros perritos">
+                        <div class="photo-caption">La familia perruna reunida 🐾</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Sección "Abrir cuando..." Oculta detrás de una imagen -->
+        <div class="card">
+            <h3>💌 Abrir cuando...</h3>
+            
+            <div class="gallery-cover" id="messagesCover" onclick="revealMessages()">
+                <img src="portada_mensajes.jpg" alt="Portada Abrir cuando..." onerror="this.src='https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=500&auto=format&fit=crop'">
+                <p>💌 Toca aquí para abrir los mensajes especiales ✨</p>
+            </div>
+
+            <div class="hidden-section" id="messagesContainer">
+                <button class="gift-btn" onclick="toggleMessage('msg1')">🌻 ...necesites sonreír</button>
+                <div id="msg1" class="secret-message">
+                    Recuerda que tienes la sonrisa más bonita de todas y que iluminas mi día cada vez que te veo feliz[span_0](start_span)[span_0](end_span)[span_1](start_span)[span_1](end_span). ¡Eres mi persona favorita!
+                    <img src="foto1.jpg" alt="Sonrisa">
+                </div>
+
+                <button class="gift-btn" onclick="toggleMessage('msg2')">☕ ...tengas un día pesado</button>
+                <div id="msg2" class="secret-message">
+                    Respira hondo. Has superado días difíciles antes y este no será la excepción. Aquí estoy siempre para escucharte, apoyarte y darte el abrazo más fuerte.
+                    <img src="foto2.jpg" alt="Abrazo">
+                </div>
+
+                <button class="gift-btn" onclick="toggleMessage('msg3')">💖 ...me extrañes</button>
+                <div id="msg3" class="secret-message">
+                    Aunque no esté a tu lado en este segundo, piensa en nuestros momentos más divertidos juntos[span_2](start_span)[span_2](end_span)[span_3](start_span)[span_3](end_span). ¡Pronto nos veremos para crear más recuerdos!
+                    <video src="video_moto.mp4" controls muted loop playsinline></video>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Carta Sorpresa de Cupones Oculta detrás de una imagen -->
+        <div class="card">
+            <h3>🎟️ Carta Sorpresa</h3>
+            
+            <div class="gallery-cover" id="couponCover" onclick="revealCouponsLetter()">
+                <img src="portada_cupones.jpg" alt="Portada Carta Sorpresa" onerror="this.src='https://images.unsplash.com/photo-1522748925139-10d793090e54?w=500&auto=format&fit=crop'">
+                <p>🎁 Toca aquí para abrir la Carta Sorpresa ✨</p>
+            </div>
+
+            <div class="hidden-section" id="couponLetterContainer">
+                <div class="letter-container" id="letterContainer">
+                    <p id="letterText">¿Aceptas abrir tus cupones de amor?</p>
+                    <div class="choice-buttons" id="choiceButtons">
+                        <button class="btn-yes" onclick="acceptCoupons()">Sí ❤️</button>
+                        <button class="btn-no" id="btnNo" onmouseover="moveButton()" ontouchstart="moveButton()">No 😜</button>
+                    </div>
+                    
+                    <div class="coupon-grid" id="couponGrid">
+                        <div class="coupon">🍦 Vale por tu postre/helado favorito</div>
+                        <div class="coupon">🎬 Vale por elegir la película</div>
+                        <div class="coupon">💆‍♂️ Vale por un masaje relajante</div>
+                        <div class="coupon">🍕 Vale por tu comida preferida</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Función para abrir la carta inicial y activar la música
+        function openMainPage() {
+            const envelope = document.getElementById('envelopeScreen');
+            const mainContent = document.getElementById('mainContent');
+            
+            envelope.style.opacity = '0';
+            setTimeout(() => {
+                envelope.style.display = 'none';
+                mainContent.classList.add('show-content');
+            }, 600);
+
+            const audio = document.getElementById('bgMusic');
+            audio.play().then(() => {
+                document.getElementById('musicIcon').textContent = '⏸️';
+                document.getElementById('musicText').textContent = 'Pausar';
+                isPlaying = true;
+            }).catch(() => {});
+        }
+
+        // Funciones para revelar cada sección oculta
+        function revealGallery() {
+            document.getElementById('galleryCover').style.display = 'none';
+            document.getElementById('photoGalleryContainer').style.display = 'block';
+        }
+
+        function revealMessages() {
+            document.getElementById('messagesCover').style.display = 'none';
+            document.getElementById('messagesContainer').style.display = 'block';
+        }
+
+        function revealCouponsLetter() {
+            document.getElementById('couponCover').style.display = 'none';
+            document.getElementById('couponLetterContainer').style.display = 'block';
+        }
+
+        // Función para mover el botón "No"
+        function moveButton() {
+            const btnNo = document.getElementById('btnNo');
+            const container = document.getElementById('letterContainer');
+            
+            const maxX = container.clientWidth - btnNo.clientWidth - 20;
+            const maxY = 80;
+            
+            const randomX = Math.floor(Math.random() * maxX) - (maxX / 2);
+            const randomY = Math.floor(Math.random() * maxY) - 20;
+            
+            btnNo.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        }
+
+        // Función al hacer clic en "Sí"
+        function acceptCoupons() {
+            document.getElementById('letterText').style.display = 'none';
+            document.getElementById('choiceButtons').style.display = 'none';
+            document.getElementById('couponGrid').style.display = 'grid';
+        }
+
+        // Generador de Efecto de Nieve con Corazones
+        function createSnowflake() {
+            const snowContainer = document.getElementById('snowContainer');
+            if(!snowContainer) return;
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.innerHTML = '❄';
+            
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            const duration = Math.random() * 5 + 4;
+            snowflake.style.animationDuration = duration + 's';
+            snowflake.style.opacity = Math.random() * 0.7 + 0.3;
+            snowflake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+
+            snowContainer.appendChild(snowflake);
+
+            setTimeout(() => {
+                snowflake.remove();
+            }, duration * 1000);
+        }
+
+        setInterval(createSnowflake, 250);
+
+        // Control de Música
+        const audio = document.getElementById('bgMusic');
+        const musicIcon = document.getElementById('musicIcon');
+        const musicText = document.getElementById('musicText');
+        let isPlaying = false;
+
+        function toggleMusic() {
+            if (isPlaying) {
+                audio.pause();
+                musicIcon.textContent = '🎵';
+                musicText.textContent = 'Música';
+                isPlaying = false;
+            } else {
+                audio.play();
+                musicIcon.textContent = '⏸️';
+                musicText.textContent = 'Pausar';
+                isPlaying = true;
+            }
+        }
+
+        function toggleMessage(id) {
+            var msg = document.getElementById(id);
+            if (msg.style.display === "block") {
+                msg.style.display = "none";
+            } else {
+                msg.style.display = "block";
+            }
+        }
+
+        // Corazones al mover el cursor
+        function createHeart(x, y) {
+            const heart = document.createElement('div');
+            heart.className = 'heart-particle';
+            heart.innerHTML = '❤️';
+            heart.style.left = x + 'px';
+            heart.style.top = y + 'px';
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 1200);
+        }
+
+        let throttleTimer;
+        document.addEventListener('mousemove', (e) => {
+            if (!throttleTimer) {
+                createHeart(e.clientX, e.clientY);
+                throttleTimer = setTimeout(() => { throttleTimer = null; }, 150);
+            }
+        });
+
+        document.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            createHeart(touch.clientX, touch.clientY);
+        });
+    </script>
+</body>
+</html>
